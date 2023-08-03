@@ -12,8 +12,8 @@ def conecta_db2():
   conn = mysql.connector.connect(
     host="aws.connect.psdb.cloud",
     database="analises",
-    user="rlk7h67rkbqblfoopzzb",
-    password="pscale_pw_Q0K5ORUMEoO1R80hZ0lwp0NN7rTa8y0YQCuyIe1maTc"
+    user="boc36q84eq64ebmrjqbs",
+    password="pscale_pw_gpxgFaKmTnOUcs5vHQbBLI3U3uVuRJrBmS6wbKUEkbg"
 
   )
   return conn
@@ -29,7 +29,7 @@ def conecta_db():
     autocommit = True,
     ssl_mode = "VERIFY_IDENTITY",
     ssl      = {
-      "ca": "/etc/ssl/cert.pem"
+      "ca": "./etc/ssl/cert.pem"
     }
   )
   return connection
