@@ -9,8 +9,8 @@ def conecta_db():
   conn = mysql.connector.connect(
     host="aws.connect.psdb.cloud",
     database="analises",
-    user="j45yzh42xjey1qfjo8m2",
-    password="pscale_pw_34bY4RaLDwJFUzJ4TuLRkCPguLPfbN0G80tHBZha1db"
+    user="r4ud4gh1g14wrkjswcnn",
+    password="pscale_pw_tVmm8dCnRQMB5KKw59KQFTXfznrspPfO8QkE074Gmnm"
 
   )
   return conn
