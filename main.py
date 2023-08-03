@@ -1,22 +1,22 @@
 from flask import Flask
-
+import os
 import mysql.connector
 app = Flask(__name__)
 
 
-
+import os
 def conecta_db():
   conn = mysql.connector.connect(
-    host="aws.connect.psdb.cloud",
-    database="analises",
-    user="t6qns6bjnpbb2mmfvzmk",
-    password="pscale_pw_zcJccSKyU8z0Ryesjxuv6eNqJEV0jiXaMgN0hqHCOW5",
+    host=os.getenv("host"),
+    database=os.getenv("database"),
+    user=os.getenv("user"),
+    password=os.getenv("password"),
     ssl_verify_identity = True,
-    ssl_ca='cacert-2023-05-30.pem',
+    ssl_ca=os.getenv("ssl_ca"),
     use_pure=True
-
   )
   return conn
+
 
 
 
@@ -50,10 +50,7 @@ def getCep():
 
   sql = "select * from teste"
   data = consulta(sql)
-  # # Criar um DataFrame pandas com os dados retornados
-  # df = pd.DataFrame(data, columns=['nome_curso', 'cod_curso'])
-  # # Converter o DataFrame em JSON
-  # json_data = df.to_json(orient='records')
+
   return data
 
 if __name__ == '__main__':
