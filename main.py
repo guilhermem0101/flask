@@ -1,6 +1,9 @@
-from flask import Flask
+from flask import Flask, send_file
 import os
+import io
 import mysql.connector
+import pandas as pd
+import matplotlib.pyplot as plt
 app = Flask(__name__)
 
 
@@ -46,12 +49,31 @@ def indexs():
 
 
 @app.route('/produtos', methods=['GET'])
-def getCep():
+def getAllProdutos():
 
   sql = "select * from Produtos"
   data = consulta(sql)
 
   return data
+
+
+@app.route('/vendas', methods=['GET'])
+def getSerie():
+  url = "https://raw.githubusercontent.com/guilhermem0101/ml-book-exemplos/main/dados_transformados.csv"
+  df = pd.read_csv(url)
+  serie_temporal_dia = df.resample('D')['Sales'].sum()
+  plt.figure(figsize=(10, 6))
+  serie_temporal_dia.plot(kind='line', marker='o')
+  img_buffer = io.BytesIO()
+  plt.savefig(img_buffer, format='png')
+  img_buffer.seek(0)
+
+  # Retorna a imagem diretamente como resposta
+  return send_file(img_buffer, mimetype='image/png')
+
+
+
+
 
 if __name__ == '__main__':
   app.run(port=5000)
