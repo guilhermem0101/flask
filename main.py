@@ -45,10 +45,10 @@ def indexs():
   return x
 
 
-@app.route('/test', methods=['GET'])
+@app.route('/produtos', methods=['GET'])
 def getCep():
 
-  sql = "select * from teste"
+  sql = "select * from Produtos"
   data = consulta(sql)
 
   return data
