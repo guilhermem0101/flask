@@ -61,6 +61,7 @@ def getAllProdutos():
 def getSerie():
   url = "https://raw.githubusercontent.com/guilhermem0101/ml-book-exemplos/main/dados_transformados.csv"
   df = pd.read_csv(url)
+  df.set_index('Order Date', inplace=True)
   serie_temporal_dia = df.resample('D')['Sales'].sum()
   plt.figure(figsize=(10, 6))
   serie_temporal_dia.plot(kind='line', marker='o')
