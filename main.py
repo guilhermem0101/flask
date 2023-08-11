@@ -1,4 +1,4 @@
-from flask import Flask, send_file, request
+from flask import Flask, send_file, request, jsonify
 import os
 import io
 import mysql.connector
@@ -6,7 +6,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 app = Flask(__name__)
 
-
+url = "https://raw.githubusercontent.com/guilhermem0101/ml-book-exemplos/main/dados_transformados.csv"
 
 def conecta_db():
   conn = mysql.connector.connect(
@@ -48,6 +48,23 @@ def indexs():
   return x
 
 
+@app.route('/produtos/contagem', methods=['GET'])
+def countByProdutos():
+  produto = request.args.get('produto')
+  
+  df = pd.read_csv(url)
+  qtd_por_produto = df.groupby('Product')['Quantity Ordered'].sum().sort_values(ascending=False)
+
+    # Converter a série em um dicionário
+  qtd_por_produto_dict = qtd_por_produto.to_dict()
+  
+    # Criar uma lista de objetos com informações sobre produtos e quantidades vendidas
+  produtos_info = [{'produto': produto, 'quantidade': quantidade} for produto, quantidade in qtd_por_produto_dict.items()]
+  
+  return jsonify(produtos_info)
+
+
+
 @app.route('/produtos', methods=['GET'])
 def getAllProdutos():
 
@@ -57,14 +74,18 @@ def getAllProdutos():
   return data
 
 
+@app.route('/vendas-composicao', methods=['GET'])
+def geTotal():
+
+  df = pd.read_csv(url)
+  pedidos_compostos = df[df.duplicated(['Order Date', 'Purchase Address'], keep='first')]
+  return str(len(pedidos_compostos))
 
 
-
-
-@app.route('/vendas', methods=['GET'])
+@app.route('/vendas-serie', methods=['GET'])
 def getSeries():
   intervalo = request.args.get('intervalo')
-  url = "https://raw.githubusercontent.com/guilhermem0101/ml-book-exemplos/main/dados_transformados.csv"
+ 
   df = pd.read_csv(url)
   
   # Certifique-se de que o nome da coluna está correto
