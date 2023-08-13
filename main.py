@@ -1,11 +1,12 @@
 from flask import Flask, send_file, request, jsonify
 import os
 import io
+from flask_cors import CORS 
 import mysql.connector
 import pandas as pd
 import matplotlib.pyplot as plt
 app = Flask(__name__)
-
+CORS(app)
 url = "https://raw.githubusercontent.com/guilhermem0101/ml-book-exemplos/main/dados_transformados.csv"
 
 def conecta_db():
@@ -71,7 +72,7 @@ def getAllProdutos():
   sql = "select * from Produtos"
   data = consulta(sql)
 
-  return data
+  return jsonify(data)
 
 
 @app.route('/vendas-composicao', methods=['GET'])
