@@ -148,7 +148,7 @@ def getVendasByCity():
   if data_inicial is not None and data_final is not None:
       df = filtroPeriodo(data_inicial, data_final, df)
 
-  df['Cities'] = df['Purchase Address'].apply(lambda x: f"{get_city(x)} ({get_state(x)})") 
+  df['Cities'] = df['Purchase Address'].apply(lambda x: f"{get_city(x)} ") 
 
   cidades_mais_vendas = df.groupby('Cities')['Sales'].sum().sort_values(ascending=True)
   
