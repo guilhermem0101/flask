@@ -66,15 +66,22 @@ def countByProdutos():
   if data_inicial is not None and data_final is not None:
     df = filtroPeriodo(data_inicial, data_final, df)
     
-  qtd_por_produto = df.groupby('Product')['Quantity Ordered'].sum().sort_values(ascending=False)
+  qtd_por_produto = df.groupby('Product')['Quantity Ordered'].sum().sort_values(ascending=True)
 
     # Converter a série em um dicionário
-  qtd_por_produto_dict = qtd_por_produto.to_dict()
+  plt.figure(figsize=(10, 8))
+  qtd_por_produto.plot(kind='barh', color=plt.cm.Paired.colors)
+  plt.xlabel('Arrecadação')
+  plt.ylabel('Produtos')
+  plt.title('Produtos Mais Vendidos')
   
-    # Criar uma lista de objetos com informações sobre produtos e quantidades vendidas
-  produtos_info = [{'produto': produto, 'quantidade': quantidade} for produto, quantidade in qtd_por_produto_dict.items()]
+  # Salva o gráfico em um buffer de imagem
+  img_buffer = io.BytesIO()
+  plt.savefig(img_buffer, format='png')
+  img_buffer.seek(0)
   
-  return jsonify(produtos_info)
+  # Codifica o buffer da imagem em base64
+  return send_file(img_buffer, mimetype='image/png')
 
 
 
