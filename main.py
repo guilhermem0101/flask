@@ -150,7 +150,7 @@ def getVendasByCity():
 
   df['Cities'] = df['Purchase Address'].apply(lambda x: f"{get_city(x)} ({get_state(x)})") 
 
-  cidades_mais_vendas = df.groupby('Cities')['Sales'].sum().sort_values(ascending=False)
+  cidades_mais_vendas = df.groupby('Cities')['Sales'].sum().sort_values(ascending=True)
   
   # Cria o gráfico de barras horizontal
   plt.figure(figsize=(10, 8))
