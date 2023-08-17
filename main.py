@@ -141,20 +141,31 @@ def getSeries():
 def getVendasByCity():
   data_inicial = request.args.get('data_inicial', None)  # Padrão: None
   data_final = request.args.get('data_final', None)
-  
+
   df = pd.read_csv(url)
   df['Order Date'] = pd.to_datetime(df['Order Date'])
-   #filtra por periodo selecionado
+  
   if data_inicial is not None and data_final is not None:
-    df = filtroPeriodo(data_inicial, data_final, df)
-  
-  df['Cities'] = df['Purchase Address'].apply(lambda x: f"{get_city(x)} ({get_state(x)})") 
-  
-  cidades_mais_vendas = df.groupby('Cities')['Sales'].sum().sort_values(ascending=False)
-  cidade_info = [{'cidade': cidade, 'arrecadacao': arrecadacao} for cidade, arrecadacao in cidades_mais_vendas.items()]
-  
-  return jsonify(cidade_info)
+      df = filtroPeriodo(data_inicial, data_final, df)
 
+  df['Cities'] = df['Purchase Address'].apply(lambda x: f"{get_city(x)} ({get_state(x)})") 
+
+  cidades_mais_vendas = df.groupby('Cities')['Sales'].sum().sort_values(ascending=False)
+  
+  # Cria o gráfico de barras horizontal
+  plt.figure(figsize=(10, 8))
+  cidades_mais_vendas.plot(kind='barh', color=plt.cm.Paired.colors)
+  plt.xlabel('Arrecadação')
+  plt.ylabel('Cidades')
+  plt.title('Cidades com Mais Vendas')
+  
+  # Salva o gráfico em um buffer de imagem
+  img_buffer = io.BytesIO()
+  plt.savefig(img_buffer, format='png')
+  img_buffer.seek(0)
+  
+  # Codifica o buffer da imagem em base64
+  return send_file(img_buffer, mimetype='image/png')
 
 
 
