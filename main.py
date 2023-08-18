@@ -92,7 +92,7 @@ def countByProdutos():
   plt.xlabel('Arrecadação')
   plt.ylabel('Produtos')
   plt.title('Produtos Mais Vendidos')
-  plt.grid(True)
+ 
   # Salva o gráfico em um buffer de imagem
   img_buffer = io.BytesIO()
   plt.savefig(img_buffer, format='png')
@@ -159,6 +159,7 @@ def getSeries():
     fontsize=15, # font-size
     pad=30
   )
+  plt.xlabel('Arrecadação')
   img_buffer = io.BytesIO()
   plt.savefig(img_buffer, format='png')
   img_buffer.seek(0)
