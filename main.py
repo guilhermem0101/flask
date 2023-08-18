@@ -107,8 +107,8 @@ def countByProdutos():
 def getAllProdutos():
   df = pd.read_csv(url)
   produtos_distintos = df[['Product', 'Price Each']].drop_duplicates()
-
-    # Converter o DataFrame em uma lista de dicionários
+  produtos_distintos.rename(columns={'Price Each': 'Preco'}, inplace=True)
+  
   produtos_list = produtos_distintos.to_dict(orient='records')
 
   return jsonify(produtos_list)
