@@ -151,7 +151,7 @@ def getSeries():
   
   serie_temporal = df.resample(periodo)['Sales'].sum()
   
-  plt.figure(figsize=(10, 6))
+  plt.figure(figsize=(12, 10))
   serie_temporal.plot(kind='line', marker='o')
   plt.title( # title
     "Serie temporal de pedidos.", 
@@ -250,10 +250,10 @@ def getDistVendas():
       pad=30
   )
   plt.xlabel( # x-label
-      "Horas", 
+      "Hora", 
       weight="bold", # weight
       color="purple", # color
-      fontsize=25, # font-size
+      fontsize=20, # font-size
       loc="center" # location
   )
   plt.xticks( # x-ticks
