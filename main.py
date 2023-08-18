@@ -5,6 +5,7 @@ from flask_cors import CORS
 import mysql.connector
 import pandas as pd
 import matplotlib.pyplot as plt
+import seaborn as sns
 app = Flask(__name__)
 CORS(app)
 url = "https://raw.githubusercontent.com/guilhermem0101/ml-book-exemplos/main/dados_transformados.csv"
@@ -53,6 +54,23 @@ def get_state(address):
   return address.split(',')[2].split(' ')[1]
 
 
+def univariate_analysis(data, color, title1):
+  
+  fig = sns.histplot( # create a distplot visualization
+    data, # data      
+    kde=True, # kde
+    color=color # color
+  )
+  fig.grid(True)
+  # Set title and labels
+  fig.set_title(title1)
+  fig.set_ylabel('Frequência')
+  fig.set_xlabel('Valor da venda')
+  
+  return fig 
+
+
+
 
 @app.route('/produtos-contagem', methods=['GET'])
 def countByProdutos():
@@ -74,7 +92,7 @@ def countByProdutos():
   plt.xlabel('Arrecadação')
   plt.ylabel('Produtos')
   plt.title('Produtos Mais Vendidos')
-  
+  plt.grid(True)
   # Salva o gráfico em um buffer de imagem
   img_buffer = io.BytesIO()
   plt.savefig(img_buffer, format='png')
@@ -135,6 +153,12 @@ def getSeries():
   
   plt.figure(figsize=(10, 6))
   serie_temporal.plot(kind='line', marker='o')
+  plt.title( # title
+    "Serie temporal de pedidos.", 
+    weight="bold", # weight
+    fontsize=15, # font-size
+    pad=30
+  )
   img_buffer = io.BytesIO()
   plt.savefig(img_buffer, format='png')
   img_buffer.seek(0)
@@ -190,6 +214,91 @@ def getMediaVendas():
   valor_medio_vendas = df['Sales'].mean()
   valor_medio_formatado = round(valor_medio_vendas, 2)
   return str(valor_medio_formatado)
+
+
+
+
+@app.route('/vendas-por-horario', methods=['GET'])
+def getDistVendas():
+  data_inicial = request.args.get('data_inicial', None)  # Padrão: None
+  data_final = request.args.get('data_final', None)
+
+  df = pd.read_csv(url)
+  df['Order Date'] = pd.to_datetime(df['Order Date'])
+  
+  if data_inicial is not None and data_final is not None:
+      df = filtroPeriodo(data_inicial, data_final, df)
+
+  df['Hour'] = df['Order Date'].dt.hour 
+
+# let's prepare the value for the x-axis
+  hours = [hour for hour, df in df.groupby('Hour')]
+  # let's plot it
+  plt.figure(figsize=(15, 6)) # figuring the size
+  # makes bar plot 
+  plt.plot( # plot
+      hours, # x-axis
+      df.groupby(['Hour']).count() # data
+  )
+  # let's add grid
+  plt.grid(True)
+  plt.title( # title
+      "Distribuição de ordem de compras por horário.", 
+      weight="bold", # weight
+      fontsize=20, # font-size
+      pad=30
+  )
+  plt.xlabel( # x-label
+      "Horas", 
+      weight="bold", # weight
+      color="purple", # color
+      fontsize=25, # font-size
+      loc="center" # location
+  )
+  plt.xticks( # x-ticks
+      ticks=hours, # labels
+      weight="bold", # weight
+      fontsize=15 # font-size
+  )
+  plt.ylabel( # y-label
+      "Numero de ordens", 
+      weight="bold", # weight
+      color="black", # color
+      fontsize=20 # font-size
+  )
+  plt.yticks( # y-ticks
+      weight="bold", # weight 
+      fontsize=15 # font-size
+  )
+    
+  # Salva o gráfico em um buffer de imagem
+  img_buffer = io.BytesIO()
+  plt.savefig(img_buffer, format='png')
+  img_buffer.seek(0)
+  
+  # Codifica o buffer da imagem em base64
+  return send_file(img_buffer, mimetype='image/png')
+
+@app.route('/vendas-por-valor', methods=['GET'])
+def getVendasByValor():
+  data_inicial = request.args.get('data_inicial', None)  # Padrão: None
+  data_final = request.args.get('data_final', None)
+
+  df = pd.read_csv(url)
+  df['Order Date'] = pd.to_datetime(df['Order Date'])
+  
+  if data_inicial is not None and data_final is not None:
+      df = filtroPeriodo(data_inicial, data_final, df)
+
+  univariate_analysis(df['Sales'],'blue','Distribuição de quantidade de vendas por valor total')
+  
+  # Salva o gráfico em um buffer de imagem
+  img_buffer = io.BytesIO()
+  plt.savefig(img_buffer, format='png')
+  img_buffer.seek(0)
+  
+  # Codifica o buffer da imagem em base64
+  return send_file(img_buffer, mimetype='image/png')
 
 if __name__ == '__main__':
   app.run(port=5000)
