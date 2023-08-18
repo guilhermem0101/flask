@@ -113,6 +113,25 @@ def getAllProdutos():
 
   return jsonify(produtos_list)
   
+  
+@app.route('/vendas', methods=['GET'])
+def getAllVendas():
+  df = pd.read_csv(url)
+
+  # Selecionar os campos solicitados e os primeiros 100 registros
+  vendas_data = df[['Product', 'Quantity Ordered', 'Purchase Address', 'Order Date', 'Sales']].head(100)
+  vendas_data.rename(columns={'Price Each': 'Preco'}, inplace=True)
+  vendas_data.rename(columns={'Quantity Ordered': 'Quantity'}, inplace=True)
+  vendas_data.rename(columns={'Purchase Address': 'Address'}, inplace=True)
+  vendas_data.rename(columns={'Order Date': 'Order'}, inplace=True)
+  # Converter o DataFrame em uma lista de dicionários
+  vendas_list = vendas_data.to_dict(orient='records')
+
+  return jsonify(vendas_list)
+
+  
+  
+
 
 @app.route('/produto', methods=['GET'])
 def getAllProduto():
