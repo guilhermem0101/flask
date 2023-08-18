@@ -105,6 +105,17 @@ def countByProdutos():
 
 @app.route('/produtos', methods=['GET'])
 def getAllProdutos():
+  df = pd.read_csv(url)
+  produtos_distintos = df[['Product', 'Price Each']].drop_duplicates()
+
+    # Converter o DataFrame em uma lista de dicionários
+  produtos_list = produtos_distintos.to_dict(orient='records')
+
+  return jsonify(produtos_list)
+  
+
+@app.route('/produto', methods=['GET'])
+def getAllProduto():
   sql = "select * from Produtos"
   data = consulta(sql)
   
@@ -120,8 +131,7 @@ def getAllProdutos():
 
   return jsonify(produtos_serializados)
   
-
-
+  
 @app.route('/vendas-composicao', methods=['GET'])
 def geTotal():
 
