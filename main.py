@@ -151,7 +151,7 @@ def getSeries():
   
   serie_temporal = df.resample(periodo)['Sales'].sum()
   
-  plt.figure(figsize=(8, 6))
+  plt.figure(figsize=(10, 6))
   serie_temporal.plot(kind='line', marker='o')
   plt.title( # title
     "Serie temporal de pedidos.", 
