@@ -89,6 +89,36 @@ def countByProdutos():
     # Converter a série em um dicionário
   plt.figure(figsize=(10, 8))
   qtd_por_produto.plot(kind='barh', color=plt.cm.Paired.colors)
+  plt.xlabel('Quantidade')
+  plt.ylabel('Produtos')
+  plt.title('Produtos Mais Vendidos')
+ 
+  # Salva o gráfico em um buffer de imagem
+  img_buffer = io.BytesIO()
+  plt.savefig(img_buffer, format='png')
+  img_buffer.seek(0)
+  
+  # Codifica o buffer da imagem em base64
+  return send_file(img_buffer, mimetype='image/png')
+
+
+@app.route('/produtos-vendas', methods=['GET'])
+def countBySales():
+  produto = request.args.get('produto')
+  data_inicial = request.args.get('data_inicial', None)  # Padrão: None
+  data_final = request.args.get('data_final', None)
+  df = pd.read_csv(url)
+  df['Order Date'] = pd.to_datetime(df['Order Date'])
+  
+  #filtra por periodo selecionado
+  if data_inicial is not None and data_final is not None:
+    df = filtroPeriodo(data_inicial, data_final, df)
+    
+  qtd_por_produto = df.groupby('Product')['Sales'].sum().sort_values(ascending=True)
+
+    # Converter a série em um dicionário
+  plt.figure(figsize=(10, 8))
+  qtd_por_produto.plot(kind='barh', color=plt.cm.Paired.colors)
   plt.xlabel('Arrecadação')
   plt.ylabel('Produtos')
   plt.title('Produtos Mais Vendidos')
