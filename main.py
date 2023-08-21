@@ -121,7 +121,7 @@ def countBySales():
   qtd_por_produto.plot(kind='barh', color=plt.cm.Paired.colors)
   plt.xlabel('Arrecadação')
   plt.ylabel('Produtos')
-  plt.title('Produtos Mais Vendidos')
+  plt.title('Produtos Com Mais Arrecadação')
  
   # Salva o gráfico em um buffer de imagem
   img_buffer = io.BytesIO()
