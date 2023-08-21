@@ -102,7 +102,7 @@ def countByProdutos():
   return send_file(img_buffer, mimetype='image/png')
 
 
-@app.route('/produtos-vendas', methods=['GET'])
+@app.route('/vendas-por-produto', methods=['GET'])
 def countBySales():
   produto = request.args.get('produto')
   data_inicial = request.args.get('data_inicial', None)  # Padrão: None
