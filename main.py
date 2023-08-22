@@ -87,8 +87,8 @@ def countByProdutos():
     
   qtd_por_produto = df.groupby('Product')['Quantity Ordered'].sum().sort_values(ascending=True)
 
-    # Converter a série em um dicionário
-  plt.figure(figsize=(10, 8))
+  
+  plt.figure(figsize=(13, 8))
   ax = qtd_por_produto.plot(kind='barh', color=plt.cm.Paired.colors)
   plt.xlabel('Quantidade')
   plt.ylabel('Produtos')
@@ -118,12 +118,13 @@ def countBySales():
   qtd_por_produto = df.groupby('Product')['Sales'].sum().sort_values(ascending=True)
 
     # Converter a série em um dicionário
-  plt.figure(figsize=(10, 8))
-  qtd_por_produto.plot(kind='barh', color=plt.cm.Paired.colors)
-  plt.xlabel('Arrecadação')
+  plt.figure(figsize=(13, 8))
+  ax = qtd_por_produto.plot(kind='barh', color=plt.cm.Paired.colors)
+  plt.xlabel('Arrecadação (Em Milhões)')
   plt.ylabel('Produtos')
   plt.title('Produtos Com Mais Arrecadação')
- 
+  ax.set_yticklabels(qtd_por_produto.index, rotation=45, ha='right')
+   
   # Salva o gráfico em um buffer de imagem
   img_buffer = io.BytesIO()
   plt.savefig(img_buffer, format='png')
@@ -321,9 +322,9 @@ def getVendasByCity():
   cidades_mais_vendas = df.groupby('Cities')['Sales'].sum().sort_values(ascending=True)
   
   # Cria o gráfico de barras horizontal
-  plt.figure(figsize=(10, 8))
-  cidades_mais_vendas.plot(kind='barh', color=plt.cm.Paired.colors)
-  plt.xlabel('Arrecadação')
+  plt.figure(figsize=(12, 8))
+  ax = cidades_mais_vendas.plot(kind='barh', color=plt.cm.Paired.colors)
+  plt.xlabel('Arrecadação (Em Milhões)')
   plt.ylabel('Cidades')
   plt.title('Cidades com Mais Vendas')
   
@@ -380,13 +381,13 @@ def getDistVendas():
   # let's add grid
   plt.grid(True)
   plt.title( # title
-      "Distribuição de ordem de compras por horário.", 
+      "Distribuição de pedidos por horário.", 
       weight="bold", # weight
       fontsize=20, # font-size
       pad=30
   )
   plt.xlabel( # x-label
-      "Hora", 
+      "Hora do Dia", 
       weight="bold", # weight
       color="purple", # color
       fontsize=20, # font-size
@@ -398,7 +399,7 @@ def getDistVendas():
       fontsize=15 # font-size
   )
   plt.ylabel( # y-label
-      "Numero de ordens", 
+      "Numero de Pedidos", 
       weight="bold", # weight
       color="black", # color
       fontsize=20 # font-size
