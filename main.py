@@ -211,14 +211,53 @@ def getSeries():
   serie_temporal = df.resample(periodo)['Sales'].sum()
   
   plt.figure(figsize=(10, 6))
-  serie_temporal.plot(kind='line', marker='o')
+  serie_temporal.plot(kind='line', marker='o', color='red')
   plt.title( # title
-    "Serie temporal de pedidos.", 
+    "Serie temporal de Arrecadação.", 
     weight="bold", # weight
     fontsize=15, # font-size
     pad=30
   )
-  plt.xlabel('Arrecadação')
+  plt.xlabel('Tempo')
+  img_buffer = io.BytesIO()
+  plt.savefig(img_buffer, format='png')
+  img_buffer.seek(0)
+
+  # Retorna a imagem diretamente como resposta
+  return send_file(img_buffer, mimetype='image/png')
+
+
+
+@app.route('/ordens-serie', methods=['GET'])
+def getSeriesOrdens():
+  periodo = request.args.get('periodo')
+  data_inicial = request.args.get('data_inicial', None)  # Padrão: None
+  data_final = request.args.get('data_final', None)
+  df = pd.read_csv(url)
+  # Converte a coluna 'Order Date' para o tipo de data
+  df['Order Date'] = pd.to_datetime(df['Order Date'])
+  
+  #filtra por periodo selecionado
+  if data_inicial is not None and data_final is not None:
+    df = filtroPeriodo(data_inicial, data_final, df)
+  
+  # Certifique-se de que o nome da coluna está correto
+  df.rename(columns={'Data': 'Order Date'}, inplace=True)
+  
+  # Define 'Order Date' como o índice do DataFrame
+  df.set_index('Order Date', inplace=True)
+  
+  serie_temporal = df.resample(periodo)['Order ID'].count()
+  
+  plt.figure(figsize=(10, 6))
+  serie_temporal.plot(kind='line', marker='o')
+  plt.title( # title
+    "Serie temporal de ordens de compra.", 
+    weight="bold", # weight
+    fontsize=15, # font-size
+    pad=30
+  )
+  plt.xlabel('Tempo')
   img_buffer = io.BytesIO()
   plt.savefig(img_buffer, format='png')
   img_buffer.seek(0)
