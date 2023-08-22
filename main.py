@@ -5,6 +5,7 @@ from flask_cors import CORS
 import mysql.connector
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.ticker as mticker
 import seaborn as sns
 app = Flask(__name__)
 CORS(app)
@@ -88,11 +89,11 @@ def countByProdutos():
 
     # Converter a série em um dicionário
   plt.figure(figsize=(10, 8))
-  qtd_por_produto.plot(kind='barh', color=plt.cm.Paired.colors)
+  ax = qtd_por_produto.plot(kind='barh', color=plt.cm.Paired.colors)
   plt.xlabel('Quantidade')
   plt.ylabel('Produtos')
   plt.title('Produtos Mais Vendidos')
- 
+  ax.set_yticklabels(qtd_por_produto.index, rotation=45, ha='right')
   # Salva o gráfico em um buffer de imagem
   img_buffer = io.BytesIO()
   plt.savefig(img_buffer, format='png')
@@ -130,6 +131,43 @@ def countBySales():
   
   # Codifica o buffer da imagem em base64
   return send_file(img_buffer, mimetype='image/png')
+
+
+
+
+@app.route('/histograma-de-produtos', methods=['GET'])
+def histogramaProdutosByOrdem():
+  produto = request.args.get('produto')
+  data_inicial = request.args.get('data_inicial', None)  # Padrão: None
+  data_final = request.args.get('data_final', None)
+  df = pd.read_csv(url)
+  df['Order Date'] = pd.to_datetime(df['Order Date'])
+  
+  #filtra por periodo selecionado
+  if data_inicial is not None and data_final is not None:
+    df = filtroPeriodo(data_inicial, data_final, df)
+    
+  freq = df["Order ID"].value_counts()
+
+  order = freq.value_counts()
+  normalized_order = order / order.sum()
+  plt.figure(figsize=(10, 6))
+  plt.bar(normalized_order.index, normalized_order.values, color='red')
+  plt.xlabel('Quantidade de Produtos distintos')
+  plt.ylabel('Proporção de pedidos (%)')
+  plt.title('Histograma ')
+  plt.gca().yaxis.set_major_formatter(mticker.PercentFormatter(xmax=1.0))
+  for i, value in enumerate(normalized_order.values):
+    plt.text(normalized_order.index[i], value + 0.01, f'{value:.2%}', ha='center')
+  
+  # Salva o gráfico em um buffer de imagem
+  img_buffer = io.BytesIO()
+  plt.savefig(img_buffer, format='png')
+  img_buffer.seek(0)
+  
+  # Codifica o buffer da imagem em base64
+  return send_file(img_buffer, mimetype='image/png')
+
 
 
 
@@ -209,7 +247,7 @@ def getSeries():
   df.set_index('Order Date', inplace=True)
   
   serie_temporal = df.resample(periodo)['Sales'].sum()
-  
+  serie_temporal = serie_temporal.loc['2019-01-01':'2019-12-31']
   plt.figure(figsize=(10, 6))
   serie_temporal.plot(kind='line', marker='o', color='red')
   plt.title( # title
@@ -248,7 +286,7 @@ def getSeriesOrdens():
   df.set_index('Order Date', inplace=True)
   
   serie_temporal = df.resample(periodo)['Order ID'].count()
-  
+  serie_temporal = serie_temporal.loc['2019-01-01':'2019-12-31']
   plt.figure(figsize=(10, 6))
   serie_temporal.plot(kind='line', marker='o')
   plt.title( # title
