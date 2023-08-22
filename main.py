@@ -153,10 +153,10 @@ def histogramaProdutosByOrdem():
   order = freq.value_counts()
   normalized_order = order / order.sum()
   plt.figure(figsize=(10, 6))
-  plt.bar(normalized_order.index, normalized_order.values, color='red')
-  plt.xlabel('Quantidade de Produtos distintos')
+  plt.bar(normalized_order.index, normalized_order.values, color=plt.cm.Paired.colors)
+  plt.xlabel('Quantidade')
   plt.ylabel('Proporção de pedidos (%)')
-  plt.title('Histograma ')
+  plt.title('Histograma de pedidos com produtos distintos')
   plt.gca().yaxis.set_major_formatter(mticker.PercentFormatter(xmax=1.0))
   for i, value in enumerate(normalized_order.values):
     plt.text(normalized_order.index[i], value + 0.01, f'{value:.2%}', ha='center')
@@ -291,7 +291,7 @@ def getSeriesOrdens():
   plt.figure(figsize=(10, 6))
   serie_temporal.plot(kind='line', marker='o')
   plt.title( # title
-    "Serie temporal de ordens de compra.", 
+    "Serie temporal de Pedidos.", 
     weight="bold", # weight
     fontsize=15, # font-size
     pad=30
